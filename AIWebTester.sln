@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIWebTester", "AIWebTester\AIWebTester.csproj", "{13A1E725-8173-4B1C-B7E9-0A234FA44019}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIWebTesterTests", "AIWebTesterTests\AIWebTesterTests.csproj", "{8CD6ABCD-545D-48A2-8D36-8DA28ED493C6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13A1E725-8173-4B1C-B7E9-0A234FA44019}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13A1E725-8173-4B1C-B7E9-0A234FA44019}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13A1E725-8173-4B1C-B7E9-0A234FA44019}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13A1E725-8173-4B1C-B7E9-0A234FA44019}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CD6ABCD-545D-48A2-8D36-8DA28ED493C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CD6ABCD-545D-48A2-8D36-8DA28ED493C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CD6ABCD-545D-48A2-8D36-8DA28ED493C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CD6ABCD-545D-48A2-8D36-8DA28ED493C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
