@@ -3,6 +3,7 @@
 public class ActionPromptBlock
 {
     public string? Html { get; set; }
+    public string? HtmlSummary { get; set; }
     
     /// <summary>
     /// "Click" or "Kind"
@@ -19,7 +20,7 @@ public class ActionPromptBlock
     public override string ToString()
     {
         return Action == null
-            ? $"Html: {Html}\nAction: "
-            : $"Html: {Html}\nAction: {Action}\nText: {Text}\nTargetId: {TargetId}\nExplain: {Explain}";
+            ? $"Html: {Html}\nSummary: "
+            : $"Html: {Html}\nSummary: {HtmlSummary}\nAction: {Action}\nText: {Text}\nTargetId: {TargetId}\nExplain: {Explain}";
     }
 }

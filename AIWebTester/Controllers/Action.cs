@@ -21,4 +21,9 @@ public class Action
     /// English explanation about what the action is doing.
     /// </summary>
     public string? Explain { get; set; }
+
+    /// <summary>
+    /// A summary of what was on the page before.
+    /// </summary>
+    public string PageSummary { get; set; }
 }

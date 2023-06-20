@@ -32,34 +32,71 @@ public class SiteProber
         await page.GotoAsync(url);
         return new SiteProber(page, browser, playwright);
     }
+
+    /// <summary>
+    /// Like: mo-id="30" and mo-isvisible="true"
+    /// </summary>
+    public async Task SetAttributesOnVisibleElementsAsync()
+    {
+        var visibleElements = await Page.QuerySelectorAllAsync(":visible");
+        var i = 0;
+        
+        foreach (var element in visibleElements)
+        {
+            i++;
+            
+            try
+            {
+                var html = await element.InnerHTMLAsync();
+                //await element.ScreenshotAsync(new() { Path = "single-visible-element.png" });
+                await Page.EvaluateAsync<string>(
+                    "([element, id]) => element.setAttribute('mo-id', id)",
+                    new object[] { element, i });
+                await Page.EvaluateAsync<string>(
+                    "([element, isVisible]) => element.setAttribute('mo-isVisible', isVisible)",
+                    new object[] { element, "true" });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+    }
     
     /// <summary>
     /// Chooses an action based on the current page and takes it.
     /// </summary>
     /// <returns></returns>
-    public async Task<string> TakeActionAsync()
+    public async Task<ActionResult> TakeActionAsync()
     {
-        var html = await Page.ContentAsync();
-        await Page.ScreenshotAsync(new()
-        {
-            Path = "screenshot-before.png"
-        });
-        Console.WriteLine(html.Length);
-        html = HtmlCleaner.CleanHtml(html);
-        Console.WriteLine(html.Length);
-        var action = await ChatGptPrompter.PromptForActionAsync(html);
+        var beforeScreenshotPath = "ClientApp/public/screenshot-before.png";
+        var afterScreenshotPath = "ClientApp/public/screenshot-after.png";
+        
+        //await Page.ScreenshotAsync(new() { Path = beforeScreenshotPath });
+        var beforeScreenshotBytes = await Page.ScreenshotAsync();
+        await SetAttributesOnVisibleElementsAsync();
+        var htmlBefore = await Page.ContentAsync();
+        var htmlBeforeClean = HtmlCleaner.CleanHtml2(htmlBefore);
+        var action = await ChatGptPrompter.PromptForActionAsync(htmlBeforeClean);
         await TakeActionOnPageAsync(action);
-        await Page.ScreenshotAsync(new()
-        {
-            Path = "screenshot-after.png"
-        });
+        //await Page.ScreenshotAsync(new() { Path = afterScreenshotPath });
+        var afterScreenshotBytes = await Page.ScreenshotAsync();
+        await SetAttributesOnVisibleElementsAsync();
         var htmlAfter = await Page.ContentAsync();
-        htmlAfter = HtmlCleaner.CleanHtml(htmlAfter);
+        var htmlAfterClean = HtmlCleaner.CleanHtml2(htmlAfter);
         var askResult = await ChatGptPrompter.PromptForIsExpectedAsync(
-            html,
+            htmlBeforeClean,
             action.Explain,
-            htmlAfter);
-        return askResult;
+            htmlAfterClean);
+        return new ActionResult()
+        {
+            Expected = askResult,
+            BeforeScreenshotPath = beforeScreenshotPath,
+            BeforeScreenshotBytes = Convert.ToBase64String(beforeScreenshotBytes),
+            AfterScreenshotPath = afterScreenshotPath,
+            AfterScreenshotBytes = Convert.ToBase64String(afterScreenshotBytes),
+            Action = action
+        };
     }
 
     private async Task TakeActionOnPageAsync(Action action)

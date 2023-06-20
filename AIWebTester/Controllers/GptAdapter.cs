@@ -1,11 +1,10 @@
 ﻿using OpenAI_API;
-using OpenAI_API.Chat;
 using OpenAI_API.Completions;
 using OpenAI_API.Models;
 
 namespace AIWebTester.Controllers;
 
-public class ChatGptAdapter
+public class GptAdapter
 {
     private static readonly string API_KEY = "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";
     
@@ -21,7 +20,7 @@ public class ChatGptAdapter
         var result = await api.Completions.CreateCompletionAsync(new CompletionRequest()
         {
             Model = Model.DavinciText,
-            MaxTokens = 50,
+            MaxTokens = 500,
             Temperature = 0.5,
             Prompt = prompt
         });

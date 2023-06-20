@@ -2,9 +2,9 @@
 
 internal class ExpectedPromptBlock
 {
-    public string HtmlBefore { get; private init; }
+    public string BeforeSummary { get; private init; }
     
-    public string HtmlAfter { get; private init; }
+    public string AfterSummary { get; private init; }
     
     public string Action { get; private init; }
     
@@ -12,17 +12,17 @@ internal class ExpectedPromptBlock
     
     public string? Reason { get; private set; }
 
-    public ExpectedPromptBlock(string htmlBefore, string action, string htmlAfter)
+    public ExpectedPromptBlock(string beforeSummary, string action, string afterSummary)
     {
-        HtmlBefore = htmlBefore;
-        HtmlAfter = htmlAfter;
+        BeforeSummary = beforeSummary;
+        AfterSummary = afterSummary;
         Action = action;
     }
     
-    public ExpectedPromptBlock(string htmlBefore, string action, string htmlAfter, bool isExpected, string reason)
+    public ExpectedPromptBlock(string beforeSummary, string action, string afterSummary, bool isExpected, string reason)
     {
-        HtmlBefore = htmlBefore;
-        HtmlAfter = htmlAfter;
+        BeforeSummary = beforeSummary;
+        AfterSummary = afterSummary;
         Action = action;
         IsExpected = isExpected;
         Reason = reason;
@@ -31,7 +31,7 @@ internal class ExpectedPromptBlock
     public override string ToString()
     {
         return IsExpected == null
-            ? $"Before: {HtmlBefore}\nAction: {Action}\nAfter: {HtmlAfter}\nExpected: "
-            : $"Before: {HtmlBefore}\nAction: {Action}\nAfter: {HtmlAfter}\nExpected: {IsExpected}\nReason: {Reason}";
+            ? $"Before: {BeforeSummary}\nAction: {Action}\nAfter: {AfterSummary}\nExpected: "
+            : $"Before: {BeforeSummary}\nAction: {Action}\nAfter: {AfterSummary}\nExpected: {IsExpected}\nReason: {Reason}";
     }
 }
