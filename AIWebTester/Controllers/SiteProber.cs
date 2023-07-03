@@ -48,9 +48,14 @@ public class SiteProber
             try
             {
                 var html = await element.InnerHTMLAsync();
-                //await element.ScreenshotAsync(new() { Path = "single-visible-element.png" });
                 await Page.EvaluateAsync<string>(
-                    "([element, id]) => element.setAttribute('mo-id', id)",
+                    @"([element, id]) => {
+                var existingId = element.getAttribute('id');
+                if (existingId === null || existingId === '') {
+                    // The element doesn't have an ID attribute, so set it
+                    element.setAttribute('id', id);
+                }
+}",
                     new object[] { element, i });
                 await Page.EvaluateAsync<string>(
                     "([element, isVisible]) => element.setAttribute('mo-isVisible', isVisible)",
@@ -77,7 +82,11 @@ public class SiteProber
         await SetAttributesOnVisibleElementsAsync();
         var htmlBefore = await Page.ContentAsync();
         var htmlBeforeClean = HtmlCleaner.CleanHtml2(htmlBefore);
-        var action = await ChatGptPrompter.PromptForActionAsync(htmlBeforeClean);
+        
+        var prompter = new GptPrompter();
+        var action = await prompter.PromptForActionAsync(htmlBeforeClean);
+        
+        //var action = await ChatGptPrompter.PromptForActionAsync(htmlBeforeClean);
         await TakeActionOnPageAsync(action);
         //await Page.ScreenshotAsync(new() { Path = afterScreenshotPath });
         var afterScreenshotBytes = await Page.ScreenshotAsync();
@@ -101,7 +110,7 @@ public class SiteProber
 
     private async Task TakeActionOnPageAsync(Action action)
     {
-        var element = await Page.QuerySelectorAsync($"#{action.ElementId}");
+        var element = await Page.QuerySelectorAsync($"[id='{action.ElementId}']");
 
         if (element == null)
         {

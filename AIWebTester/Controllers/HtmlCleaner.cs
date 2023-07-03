@@ -67,10 +67,32 @@ public class HtmlCleaner
 
         RemoveNonVisibleElements(doc);
         RemoveUnnecessaryAttributes(doc);
+        //AssignIdsToAllElements(doc);
         
         var htmlString = doc.DocumentNode.OuterHtml;
         //htmlString = ReplaceElementNames(htmlString);
         return htmlString;
+    }
+
+    /// <summary>
+    /// We want to interact with elements and that requires they all have IDs.
+    /// GPT needs the IDs to identify elements we want to interact with when
+    /// it's choosing an action to take.
+    /// </summary>
+    private static void AssignIdsToAllElements(HtmlDocument doc)
+    {
+        var idCounter = 0;
+        
+        foreach (var node in doc.DocumentNode.DescendantsAndSelf())
+        {
+            var idAttribute = node.Attributes["id"];
+            
+            if (idAttribute == null && node.NodeType == HtmlNodeType.Element)
+            {
+                node.Attributes.Add("id", $"{idCounter}");
+                idCounter++;
+            }
+        }
     }
 
     private static void RemoveNonVisibleElements(HtmlDocument doc)
