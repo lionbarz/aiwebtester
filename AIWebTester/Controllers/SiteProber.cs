@@ -7,6 +7,8 @@ public class SiteProber
     private IPage Page { get; init; }
     private IBrowser _browser;
     private IPlaywright _playwright;
+    private const string BeforeScreenshotPath = "ClientApp/public/screenshot-before.png";
+    private const string AfterScreenshotPath = "ClientApp/public/screenshot-after.png";
 
     private SiteProber(IPage page, IBrowser browser, IPlaywright playwright)
     {
@@ -47,7 +49,6 @@ public class SiteProber
             
             try
             {
-                var html = await element.InnerHTMLAsync();
                 await Page.EvaluateAsync<string>(
                     @"([element, id]) => {
                 var existingId = element.getAttribute('id');
@@ -67,6 +68,75 @@ public class SiteProber
             }
         }
     }
+
+    private class ComputedStyle
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public string Display { get; set; }
+        public bool Visibility { get; set; }
+        public float Opacity { get; set; }
+    }
+    
+    public async Task ScreenshotVisibleElements()
+    {
+        await Page.ScreenshotAsync(new() { Path = BeforeScreenshotPath });
+        var html = await Page.ContentAsync();
+        
+        // TODO: Write html to file for debugging so I can see what elements are there.
+        
+        var elements = await Page.QuerySelectorAllAsync("a, input, button, textarea");
+
+        Func<IElementHandle, Task<string>> isElementVisible = async (element) =>
+        {
+            return await element.EvaluateAsync<string>(@"(element) => {
+                var style = window.getComputedStyle(element);
+
+    // Check if the element is not visible
+    if (style.display === 'none' || 
+        style.visibility !== 'visible' || 
+        style.opacity === ""0"" || 
+        style.width === ""0"" || 
+        style.height === ""0"") {
+        return false;
+    }
+
+    // Check if the element is off-screen
+    var rect = element.getBoundingClientRect();
+    if (rect.bottom < 0 || 
+        rect.right < 0 || 
+        rect.left > window.innerWidth || 
+        rect.top > window.innerHeight) {
+        return false;
+    }
+
+    // Check if the element is behind another element
+    var point = {
+        x: rect.left + (rect.right - rect.left)/2,
+        y: rect.top + (rect.bottom - rect.top)/2
+    };
+    var behindElement = document.elementFromPoint(point.x, point.y);
+    if (behindElement !== null && behindElement !== element) {
+        return false;
+    }
+
+    return true;
+            }");
+        };
+
+        int i = 0;
+        
+        foreach (var element in elements)
+        {
+            i++;
+            string isVisible = await isElementVisible(element);
+
+            if (isVisible.ToLower() == "true")
+            {
+                await element.ScreenshotAsync(new() { Path = $"ClientApp/public/screenshot-{i}.png" });
+            }
+        }
+    }
     
     /// <summary>
     /// Chooses an action based on the current page and takes it.
@@ -74,9 +144,6 @@ public class SiteProber
     /// <returns></returns>
     public async Task<ActionResult> TakeActionAsync()
     {
-        var beforeScreenshotPath = "ClientApp/public/screenshot-before.png";
-        var afterScreenshotPath = "ClientApp/public/screenshot-after.png";
-        
         //await Page.ScreenshotAsync(new() { Path = beforeScreenshotPath });
         var beforeScreenshotBytes = await Page.ScreenshotAsync();
         await SetAttributesOnVisibleElementsAsync();
@@ -100,9 +167,9 @@ public class SiteProber
         return new ActionResult()
         {
             Expected = askResult,
-            BeforeScreenshotPath = beforeScreenshotPath,
+            BeforeScreenshotPath = BeforeScreenshotPath,
             BeforeScreenshotBytes = Convert.ToBase64String(beforeScreenshotBytes),
-            AfterScreenshotPath = afterScreenshotPath,
+            AfterScreenshotPath = AfterScreenshotPath,
             AfterScreenshotBytes = Convert.ToBase64String(afterScreenshotBytes),
             Action = action
         };

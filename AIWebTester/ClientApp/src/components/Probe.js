@@ -4,14 +4,20 @@ export function Probe() {
     const [url, setUrl] = useState('http://www.google.com');
     const [loading, setLoading] = useState(false);
     const [probeResult, setProbeResult] = useState();
+    const [error, setError] = useState(undefined);
     const startProbe = async () => {
         setLoading(true);
+        setError(undefined);
+        setProbeResult(undefined);
         try {
             const response = await fetch('test?url=' + url);
             const data = await response.json();
             setProbeResult(data);
+            setError(undefined);
         } catch(e) {
             console.error(e);
+            setProbeResult(undefined);
+            setError(e);
         }
         setLoading(false);
     };
@@ -25,18 +31,21 @@ export function Probe() {
             </form>
             <button onClick={startProbe}>Go!</button>
             {loading && <div>Loading...</div>}
-            <div>
-                Action: {probeResult?.action?.explain}
-            </div>
-            <div>
-                Before: <img width="20em" src={"data:image/png;base64," + probeResult?.beforeScreenshotBytes} />
-            </div>
-            <div>
-                After: <img width="20em" src={"data:image/png;base64," + probeResult?.afterScreenshotBytes} />
-            </div>
-            <div>
-                Expected: {probeResult?.expected}
-            </div>
+            {probeResult && 
+                <div>
+                    <div>
+                        Action: {probeResult?.action?.explain}
+                    </div>
+                    <div>
+                        Before: <img width="100%" src={"data:image/png;base64," + probeResult?.beforeScreenshotBytes} />
+                    </div>
+                    <div>
+                        After: <img width="100%" src={"data:image/png;base64," + probeResult?.afterScreenshotBytes} />
+                    </div>
+                    <div>
+                        Expected: {probeResult?.expected}
+                    </div>
+                </div>}
         </div>
     );
 }

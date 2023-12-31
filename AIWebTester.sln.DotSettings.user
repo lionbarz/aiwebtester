@@ -4,6 +4,8 @@
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::8CD6ABCD-545D-48A2-8D36-8DA28ED493C6::net6.0::AIWebTesterTests.ProbeTests.Test1&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::8CD6ABCD-545D-48A2-8D36-8DA28ED493C6::net6.0::AIWebTesterTests.ProbeTests.Test2&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::8CD6ABCD-545D-48A2-8D36-8DA28ED493C6::net6.0::AIWebTesterTests.PlaywrightTests.Test1&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::8CD6ABCD-545D-48A2-8D36-8DA28ED493C6::net6.0::AIWebTesterTests.ProbeTests.TestScreenshotElements&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>

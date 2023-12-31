@@ -21,7 +21,14 @@ public class ProbeTests
     }
     
     [Test]
-    public async Task Test2()
+    public async Task TestScreenshotElements()
+    {
+        var prober = await SiteProber.CreateAsync("http://www.google.com");
+        await prober.ScreenshotVisibleElements();
+    }
+    
+    [Test]
+    public async Task TestChatBasic()
     {
         var response = await GptRestAdapter.CompleteChat(new Message[]
         {

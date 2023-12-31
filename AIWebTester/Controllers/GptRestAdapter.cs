@@ -25,7 +25,7 @@ public class GptRestAdapter
             using StringContent jsonContent = new(
                 JsonSerializer.Serialize(new
                 {
-                    model = "gpt-3.5-turbo-0613",
+                    model = "gpt-3.5-turbo",
                     messages = messages.Select(m => new {
                         role = m.Role,
                         content = m.Content
